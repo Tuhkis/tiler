@@ -16,8 +16,8 @@ struct BottomBar {
 };
 
 void bottom_bar_init(struct Tiler* t);
-void bottom_bar_update();
-void bottom_bar_draw();
+void bottom_bar_update(void);
+void bottom_bar_draw(void);
 
 #endif /* BOTTOM_BAR_H */
 

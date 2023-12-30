@@ -8,7 +8,7 @@ void bottom_bar_init(struct Tiler* t) {
   bar.app = t;
 }
 
-void bottom_bar_update() {
+void bottom_bar_update(void) {
   bar.height = bar.app->window_height * BB_HEIGHT;
   if (bar.height < BB_MIN_HEIGHT) bar.height = BB_MIN_HEIGHT;
   if (bar.height > BB_MAX_HEIGHT) bar.height = BB_MAX_HEIGHT;
@@ -24,7 +24,7 @@ void bottom_bar_update() {
   bar.r.h = bar.height;
 }
 
-void bottom_bar_draw() {
+void bottom_bar_draw(void) {
   SDL_SetRenderDrawColor(bar.app->renderer, 240, 240, 240, 255);
   SDL_RenderFillRect(bar.app->renderer, &bar.r);
 }
