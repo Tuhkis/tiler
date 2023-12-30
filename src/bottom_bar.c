@@ -9,16 +9,16 @@ void bottom_bar_init(struct Tiler* t) {
 }
 
 void bottom_bar_update() {
-  bar.height = bar.app->window_height * BB_MARGIN_X;
-  bar.height = bar.height > BB_MIN_HEIGHT ?
-    bar.app->window_height * 0.15f : BB_MIN_HEIGHT;
+  bar.height = bar.app->window_height * BB_HEIGHT;
+  if (bar.height < BB_MIN_HEIGHT) bar.height = BB_MIN_HEIGHT;
+  if (bar.height > BB_MAX_HEIGHT) bar.height = BB_MAX_HEIGHT;
 
-  bar.r.x = bar.app->window_width * 0.05;
+  bar.r.x = bar.app->window_width * BB_MARGIN_X;
   bar.r.y = bar.app->window_height - bar.height;
 
   bar.r.w = bar.app->window_width - bar.r.x * 2;
   bar.r.x = bar.r.w > BB_MIN_WIDTH ?
-    bar.app->window_width * 0.05 : 0;
+    bar.app->window_width * BB_MARGIN_X : 0;
   bar.r.w = bar.app->window_width - bar.r.x * 2;
 
   bar.r.h = bar.height;

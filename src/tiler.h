@@ -1,7 +1,12 @@
 #ifndef TILER_H
 #define TILER_H
 
-#define TARGET_FPS (40)
+#ifdef _WIN32
+  #define WIN32_LEAN_AND_MEAN
+  #include "windows.h"
+#endif /* _WIN32 */
+
+#define TARGET_FPS (120)
 
 struct Tiler {
   SDL_Window* window;
@@ -9,6 +14,8 @@ struct Tiler {
   int window_width;
   int window_height;
 };
+
+float scale(void);
 
 #endif /* TILER_H */
 

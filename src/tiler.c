@@ -4,11 +4,28 @@
 #include "tiler.h"
 #include "bottom_bar.h"
 
+static float dpi = 1.0f;
+
+float get_dpi(void) {
+  float dpi;
+  SDL_GetDisplayDPI(0, &dpi, NULL, NULL);
+  return dpi / 96.0f;
+}
+
+float scale(void) { return dpi; }
+
 int main(int argc, char** argv) {
   struct Tiler app = {0};
   SDL_DisplayMode dm;
   SDL_Event event;
   unsigned char running = 1;
+#ifdef _WIN32
+  {
+    HINSTANCE lib = LoadLibrary("user32.dll");
+    int (*SetProcessDPIAware)(void) = (void*) GetProcAddress(lib, "SetProcessDPIAware");
+    SetProcessDPIAware();
+  }
+#endif /* _WIN32 */
 
   (void)argc;
   (void)argv;
@@ -40,6 +57,8 @@ int main(int argc, char** argv) {
     SDL_Quit();
     return -1;
   }
+
+  dpi = get_dpi();
 
   bottom_bar_init(&app);
   SDL_SetRenderDrawColor(app.renderer, 255, 60, 60, 255);

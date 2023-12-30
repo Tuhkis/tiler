@@ -3,9 +3,11 @@
 
 #include "tiler.h"
 
-#define BB_MIN_HEIGHT (70)
-#define BB_MIN_WIDTH (690)
+#define BB_MAX_HEIGHT (62 * scale())
+#define BB_MIN_HEIGHT (32 * scale())
+#define BB_MIN_WIDTH (500 * scale())
 #define BB_MARGIN_X (0.02f)
+#define BB_HEIGHT (0.1f)
 
 struct BottomBar {
   struct Tiler* app;
