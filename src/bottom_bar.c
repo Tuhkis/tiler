@@ -1,6 +1,7 @@
 #include "SDL2/SDL.h"
 
 #include "bottom_bar.h"
+#include "style.h"
 
 static struct BottomBar bar = {0};
 
@@ -25,7 +26,7 @@ void bottom_bar_update(void) {
 }
 
 void bottom_bar_draw(void) {
-  SDL_SetRenderDrawColor(bar.app->renderer, 240, 240, 240, 255);
+  SDL_SetRenderDrawColor(bar.app->renderer, BOTTOM_BAR_COLOR);
   SDL_RenderFillRect(bar.app->renderer, &bar.r);
 }
 

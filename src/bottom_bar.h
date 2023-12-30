@@ -10,9 +10,9 @@
 #define BB_HEIGHT (0.1f)
 
 struct BottomBar {
-  struct Tiler* app;
-  SDL_Rect r;
   int height;
+  SDL_Rect r;
+  struct Tiler* app;
 };
 
 void bottom_bar_init(struct Tiler* t);

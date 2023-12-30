@@ -1,10 +1,18 @@
 #include "SDL2/SDL.h"
 #include "stdio.h"
 
-#include "tiler.h"
-#include "bottom_bar.h"
+#include "stb_truetype.h"
 
-static float dpi = 1.0f;
+#include "bottom_bar.h"
+#include "font.h"
+#include "help.h"
+#include "keymap.h"
+#include "map.h"
+#include "style.h"
+#include "tiler.h"
+
+static float dpi_amt = 1.0f;
+static float zoom_amt = 1.0f;
 
 float get_dpi(void) {
   float dpi;
@@ -12,13 +20,40 @@ float get_dpi(void) {
   return dpi / 96.0f;
 }
 
-float scale(void) { return dpi; }
+float zoom(void) { return zoom_amt; }
+float scale(void) { return dpi_amt; }
+
+void quit_app(struct Tiler* app) {
+  app->running = 0;
+}
+
+void draw_grid(struct Tiler* app) {
+  unsigned int i;
+  float line_width = 3.5f * scale() * zoom();
+  if (line_width < 2) line_width = 2.0f;
+  SDL_SetRenderDrawColor(app->renderer, GRID_COLOR);
+  for (i = 0; i < app->map.width; ++i) {
+    SDL_Rect r;
+    r.x = i * TILE_SIZE - 0.5f * line_width - app->cam_x;
+    r.y = 0;
+    r.w = line_width;
+    r.h = app->window_height;
+    SDL_RenderFillRect(app->renderer, &r);
+  }
+  for (i = 0; i < app->map.height; ++i) {
+    SDL_Rect r;
+    r.x = 0;
+    r.y = i * TILE_SIZE - 0.5f * line_width - app->cam_y;
+    r.w = app->window_width;
+    r.h = line_width;
+    SDL_RenderFillRect(app->renderer, &r);
+  }
+}
 
 int main(int argc, char** argv) {
   struct Tiler app = {0};
   SDL_DisplayMode dm;
   SDL_Event event;
-  unsigned char running = 1;
 #ifdef _WIN32
   {
     HINSTANCE lib = LoadLibrary("user32.dll");
@@ -58,47 +93,95 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-  dpi = get_dpi();
+  dpi_amt = get_dpi();
 
   bottom_bar_init(&app);
+  help_screen_init(&app);
   SDL_SetRenderDrawColor(app.renderer, 255, 60, 60, 255);
 	SDL_RenderClear(app.renderer);
 	SDL_RenderPresent(app.renderer);
+	app.cam_x = 0.0f;
+	app.cam_y = 0.0f;
+	app.map = create_map(32, 30);
+	app.ui_font = open_font(app.renderer, "font.ttf", 32 * scale());
+	app.running = 1;
   /* Main loop */
-  for (;running;) {
+  for (;app.running;) {
     /* Check for events. */
     for (;SDL_PollEvent(&event) != 0;) {
       switch (event.type) {
         case SDL_QUIT: {
-          running = 0;
+          app.running = 0;
           break;
         }
-        case SDL_WINDOWEVENT_SIZE_CHANGED: /* fallthrough */
+        case SDL_KEYDOWN: {
+          int i;
+          struct Keybind* binds = get_keybinds();
+          for (i = 0; i < MAX_KEYBINDS; ++i) {
+            if (binds[i].proc == NULL) break;
+            if (event.key.keysym.sym == binds[i].key) binds[i].proc(&app);
+          }
+          break;
+        }
+        /* Mouse wheel events */
+        case SDL_MOUSEWHEEL: {
+          /* int mouse_x, mouse_y; */
+
+          zoom_amt += event.wheel.y * 0.075f * scale();
+          if (zoom_amt < 0.6f) zoom_amt = 0.6f;
+          if (zoom_amt > 6.0f) zoom_amt = 6.0f;
+          if (event.wheel.x > 0.1f || event.wheel.x < - 0.1f)
+            app.cam_x += event.wheel.x * 0.075f * scale();
+
+          /* SDL_GetMouseState(&mouse_x, &mouse_y); */
+        }
+        case SDL_MOUSEMOTION: {
+          if (event.motion.state & SDL_BUTTON_MMASK) {
+            app.cam_x -= event.motion.xrel;
+            app.cam_y -= event.motion.yrel;
+          }
+        }
+        /* Window events */
         case SDL_WINDOWEVENT: {
           switch (event.window.event) {
+            case SDL_WINDOWEVENT_SIZE_CHANGED: /* fallthrough */
             case SDL_WINDOWEVENT_RESIZED: {
               app.window_width = event.window.data1;
               app.window_height = event.window.data2;
-              break;
             }
             default: {
-              break;
             }
           }
+          /* Don't break here. */
         }
-        /* No reason to update screen if there's no events. */
+        /* No reason to update screen if there's no events.     *
+         * All change in the view should be caused by the user. */
         default: {
-          SDL_SetRenderDrawColor(app.renderer, 20, 20, 20, 255);
+          SDL_Rect temp;
+          temp.x = floor(zoom() * (12.5f) - app.cam_x) - 1;
+          temp.y = floor(zoom() * (12.5f) - app.cam_y) - 1;
+          temp.w = floor(0.5f * TILE_SIZE);
+          temp.h = floor(0.5f * TILE_SIZE);
+
+          SDL_SetRenderDrawColor(app.renderer, BG_COLOR);
           SDL_RenderClear(app.renderer);
+          draw_grid(&app);
           bottom_bar_update();
           bottom_bar_draw();
+          SDL_RenderFillRect(app.renderer, &temp);
+          SDL_SetRenderDrawColor(app.renderer, RGB(242, 242, 242));
+          render_text(app.renderer, app.ui_font,
+            floor(zoom() - app.cam_x), floor((-8 * zoom()) - app.cam_y),
+            app.map.name);
+          help_screen_draw();
           SDL_RenderPresent(app.renderer);
-          break;
         }
       }
     }
     SDL_Delay(1000 / TARGET_FPS);
   }
+
+  close_font(app.ui_font);
 
   SDL_DestroyWindow(app.window);
   SDL_DestroyRenderer(app.renderer);

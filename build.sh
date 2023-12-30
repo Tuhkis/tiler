@@ -3,8 +3,9 @@ CC=clang
 if ! command -v clang &> /dev/null; then
   CC=gcc
 fi
-CFLAGS="-pipe -Wall -Wpedantic -Werror -Ofast -mavx -maes -msse4.1 -march=x86-64 -std=c89 -ansi"
-LFLAGS="-lSDL2"
+INC="-I./src -I./external"
+CFLAGS="-pipe -Wall -Wpedantic -Werror -Ofast -mavx -maes -msse4.1 -march=x86-64 -std=c89 -ansi -Wno-comment ${INC}"
+LFLAGS="-lSDL2 -lm"
 SRC=src
 BIN=bin
 OUT=tiler.out
