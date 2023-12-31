@@ -5,7 +5,7 @@ struct Map create_map(int width, int height) {
 
   ret.width = width;
   ret.height = height;
-  sprintf(ret.name, "new_map, (%d, %d)", width, height);
+  sprintf(ret.name, "new_map");
 
   return ret;
 }

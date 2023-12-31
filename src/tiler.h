@@ -23,6 +23,7 @@ struct Tiler {
   unsigned char running;
 };
 
+void change_zoom(float amt);
 float scale(void);
 float zoom(void);
 void quit_app(struct Tiler* app);
