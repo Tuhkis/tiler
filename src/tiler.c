@@ -134,13 +134,16 @@ int main(int argc, char** argv) {
         }
         /* Mouse wheel events */
         case SDL_MOUSEWHEEL: {
-          /* int mouse_x, mouse_y; */
+          int mouse_x, mouse_y;
+          const float s = event.wheel.y * 0.075f * scale();
+          SDL_GetMouseState(&mouse_x, &mouse_y);
 
-          change_zoom(event.wheel.y * 0.075f * scale());
-          if (event.wheel.x > 0.1f || event.wheel.x < - 0.1f)
-            app.cam_x += event.wheel.x * 0.075f * scale();
+          if (help_process_scroll(mouse_x, mouse_y, s) == 0) {
+            change_zoom(s);
+          }
+          /* if (event.wheel.xrel > 0.1f || event.wheel.x < - 0.1f)
+            app.cam_x += event.wheel.x * 0.075f * scale(); */
 
-          /* SDL_GetMouseState(&mouse_x, &mouse_y); */
         }
         case SDL_MOUSEMOTION: {
           if (event.motion.state & SDL_BUTTON_LMASK) {
