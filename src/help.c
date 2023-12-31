@@ -22,7 +22,7 @@ void help_screen_toggle(struct Tiler* app) {
 char help_process_scroll(float mouse_x, float mouse_y, float scroll) {
   /* Check if mouse is in screen. */
   if (screen.visible) {
-    screen.scroll += scroll * 150.0f;
+    screen.scroll += scroll * 225.0f;
     if (screen.scroll > 0.0f) screen.scroll = 0.0f;
     return 1;
   }
@@ -53,13 +53,13 @@ void help_screen_draw(void) {
     SDL_RenderFillRect(screen.app->renderer, &screen.r);
     SDL_RenderSetClipRect(screen.app->renderer, &screen.r);
     SDL_SetRenderDrawColor(screen.app->renderer, TEXT_COLOR);
-    render_text(screen.app->renderer, screen.app->ui_font, screen.r.x + 4, screen.r.y + 26 * scale() + screen.scroll, "Keybinds:");
+    render_text(screen.app->renderer, screen.app->ui_font, screen.r.x + 4, screen.r.y + 28 * scale() + screen.scroll, "Keybinds:");
     for (i = 0; i < MAX_KEYBINDS; ++i) {
       /* Hope and dream that this isn't exceeded... */
       char buf[512];
       if (screen.keybinds[i].desc == NULL) break;
       sprintf(buf, "%s: %s", SDL_GetKeyName(screen.keybinds[i].key), screen.keybinds[i].desc);
-      render_text(screen.app->renderer, screen.app->ui_font, screen.r.x + 16, screen.r.y + scale() * 26 * (i + 2) + 4 + screen.scroll, buf);
+      render_text(screen.app->renderer, screen.app->ui_font, screen.r.x + 4, screen.r.y + scale() * 36 * (i + 2) + screen.scroll, buf);
     }
     SDL_SetRenderDrawColor(screen.app->renderer, ACCENT_COLOR);
     screen.r.x += floor(screen.r.w - 10 * scale());

@@ -1,7 +1,6 @@
 #include "SDL2/SDL.h"
-#include "stdio.h"
-
 #include "stb_truetype.h"
+#include "stdio.h"
 
 #include "bottom_bar.h"
 #include "font.h"
@@ -141,13 +140,10 @@ int main(int argc, char** argv) {
           if (help_process_scroll(mouse_x, mouse_y, s) == 0) {
             change_zoom(s);
           }
-          /* if (event.wheel.xrel > 0.1f || event.wheel.x < - 0.1f)
-            app.cam_x += event.wheel.x * 0.075f * scale(); */
-
         }
         case SDL_MOUSEMOTION: {
           if (event.motion.state & SDL_BUTTON_LMASK) {
-            if (abs(event.motion.xrel) < 24 && abs(event.motion.yrel) < 24) {
+            if (abs(event.motion.xrel) < 26 && abs(event.motion.yrel) < 26) {
               app.cam_x -= event.motion.xrel;
               app.cam_y -= event.motion.yrel;
             }
@@ -182,7 +178,7 @@ int main(int argc, char** argv) {
           bottom_bar_update();
           SDL_RenderFillRect(app.renderer, &temp);
           SDL_SetRenderDrawColor(app.renderer, RGB(242, 242, 242));
-          sprintf(name_buf, "%s; (%d, %d)", app.map.name, app.map.width, app.map.height);
+          sprintf(&name_buf[0], "%s; (%d, %d)", app.map.name, app.map.width, app.map.height);
           render_text(app.renderer, app.ui_font,
             floor(zoom() - app.cam_x), floor((-8 * zoom()) - app.cam_y),
             name_buf);

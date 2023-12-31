@@ -1,16 +1,18 @@
 #include "SDL2/SDL.h"
 
+#include "block.h"
 #include "help.h"
 #include "keymap.h"
 
 void zoom_in(struct Tiler* app);
 void zoom_out(struct Tiler* app);
 
-static struct Keybind keys[MAX_KEYBINDS] = {
-  {"Open help screen.", SDLK_TAB, help_screen_toggle},
+static struct Keybind keys[] = {
+  {"Open/Close help screen.", SDLK_TAB, help_screen_toggle},
   {"Close program.", SDLK_ESCAPE, quit_app},
   {"Zoom in.", SDLK_PLUS, zoom_in},
   {"Zoom out.", SDLK_MINUS, zoom_out},
+  {"Delete chosen block.", SDLK_DELETE, delete_current_block},
   {NULL, 0, NULL}
 };
 

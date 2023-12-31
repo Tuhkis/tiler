@@ -1,6 +1,9 @@
 #ifndef TILER_H
 #define TILER_H
 
+#include "SDL2/SDL.h"
+
+#include "block_type.h"
 #include "font.h"
 #include "map.h"
 
@@ -19,13 +22,14 @@ struct Tiler {
   int window_width;
   SDL_Renderer* renderer;
   SDL_Window* window;
+  struct Block* current_block;
   struct Map map;
   unsigned char running;
 };
 
-void change_zoom(float amt);
 float scale(void);
 float zoom(void);
+void change_zoom(float amt);
 void quit_app(struct Tiler* app);
 
 #endif /* TILER_H */

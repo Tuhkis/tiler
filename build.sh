@@ -4,7 +4,7 @@ if ! command -v clang &> /dev/null; then
   CC=gcc
 fi
 INC="-I./src -I./external"
-CFLAGS="-pipe -Wall -Wpedantic -Werror -Ofast -mavx -maes -msse4.1 -march=x86-64 -std=c89 -ansi -Wno-comment ${INC}"
+CFLAGS="-pipe -Wall -Wpedantic -Werror -Ofast -mavx -maes -msse4.1 -march=x86-64 -std=c89 -ansi -Wno-comment -Wno-visibility ${INC}"
 LFLAGS="-lSDL2 -lm"
 SRC=src
 BIN=bin
