@@ -143,7 +143,7 @@ int main(int argc, char** argv) {
           /* SDL_GetMouseState(&mouse_x, &mouse_y); */
         }
         case SDL_MOUSEMOTION: {
-          if (event.motion.state & SDL_BUTTON_MMASK) {
+          if (event.motion.state & SDL_BUTTON_LMASK) {
             app.cam_x -= event.motion.xrel;
             app.cam_y -= event.motion.yrel;
           }
