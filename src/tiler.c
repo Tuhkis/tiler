@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
         }
         case SDL_MOUSEMOTION: {
           if (event.motion.state & SDL_BUTTON_LMASK) {
-            if (abs(event.motion.xrel) < 16 && abs(event.motion.yrel) < 16) {
+            if (abs(event.motion.xrel) < 24 && abs(event.motion.yrel) < 24) {
               app.cam_x -= event.motion.xrel;
               app.cam_y -= event.motion.yrel;
             }
