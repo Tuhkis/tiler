@@ -167,7 +167,7 @@ int main(int argc, char** argv) {
         /* No reason to update screen if there's no events.     *
          * All change in the view should be caused by the user. */
         default: {
-          char name_buf[1024] = {0};
+          char name_buf[1052] = {0};
           SDL_Rect temp;
           temp.x = floor(zoom() * (12.5f) - app.cam_x) - 1;
           temp.y = floor(zoom() * (12.5f) - app.cam_y) - 1;

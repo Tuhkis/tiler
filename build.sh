@@ -4,8 +4,10 @@ RED="\e[31m"
 GREEN="\e[32m"
 NORM="\e[0m"
 
+STD="-Wall -Wpedantic -Werror -std=c89 -ansi"
 CC=clang
 if ! command -v clang &> /dev/null; then
+  STD="-Wall -Wpedantic -Werror"
   CC=gcc
 fi
 INC="-I./src -I./external $(sdl2-config --cflags)"
@@ -16,9 +18,9 @@ OUT=tiler
 OUT_TYPE="out"
 FILES=($(find ${SRC}/*.c))
 FILES_LEN=${#FILES[@]}
-STD="-Wall -Wpedantic -Werror -std=c89 -ansi"
 
 if [[ $* == *windows* ]]; then
+  echo "Windooz time!!"
   CC="x86_64-w64-mingw32-gcc"
   INC="-I./src -I./external -Iexternal/windows/SDL2-2.28.5/x86_64-w64-mingw32/include"
   OUT_TYPE="exe"
@@ -26,9 +28,14 @@ if [[ $* == *windows* ]]; then
   LFLAGS="-Lexternal/windows/SDL2-2.28.5/x86_64-w64-mingw32/lib -lm -lmingw32 -lSDL2main -lSDL2 -mwindows"
   cp external/windows/SDL2-2.28.5/x86_64-w64-mingw32/bin/SDL2.dll ${BIN}
 fi
+if [[ $* == *clean* ]]; then
+  echo "Cleaning time!!"
+  rm -rf ${BIN}
+  echo -e "${GREEN}done."
+  exit 0
+fi
 
 CFLAGS="-pipe -Ofast -mavx -maes -msse4.1 -march=x86-64 ${STD} -Wno-comment -Wno-visibility ${INC}"
-
 
 mkdir -p ${BIN}
 
