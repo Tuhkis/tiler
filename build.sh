@@ -1,4 +1,9 @@
 #!/bin/bash
+
+RED="\e[31m"
+GREEN="\e[32m"
+NORM="\e[0m"
+
 CC=clang
 if ! command -v clang &> /dev/null; then
   CC=gcc
@@ -10,20 +15,27 @@ SRC=src
 BIN=bin
 OUT=tiler.out
 FILES=($(find ${SRC}/*.c))
+FILES_LEN=${#FILES[@]}
 
 mkdir -p ${BIN}
+can_compile=true
+
+build_file () {
+  if ! ${CC} ${CFLAGS} -c $1 -o "${BIN}/${1//\//_}.o"; then
+    echo -e "${RED}failed to compile $1.${NORM}"
+    rm ${BIN}/*.o
+  fi
+  COMPILED=($(find ${BIN}/*.o))
+  COMPILED_LEN=${#COMPILED[@]}
+  echo -e "${GREEN}[$(((COMPILED_LEN * 100) / (FILES_LEN)))%]${NORM} Compiled $1"
+}
 
 echo "Building..."
-can_compile=true
 for i in "${!FILES[@]}"; do
-  FILE="${FILES[i]}"
-  if ! ${CC} ${CFLAGS} -c ${FILE} -o "${BIN}/${FILE//\//_}.o"; then
-    echo "failed to compile file ${FILE}."
-    can_compile=false
-    break
-  fi
+  build_file "${FILES[i]}" &
 done
 
+wait $(jobs -p)
 if ${can_compile}; then
   echo "linking..."
   if $(${CC} ${BIN}/*.o ${LFLAGS} -o ${BIN}/${OUT}); then
@@ -34,5 +46,5 @@ fi
 
 echo "cleaning..."
 rm ${BIN}/*.o
-echo "done. Have fun!"
+echo -e "${GREEN}done. Have fun!${NORM}"
 
