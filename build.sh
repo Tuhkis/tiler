@@ -20,11 +20,11 @@ STD="-Wall -Wpedantic -Werror -std=c89 -ansi"
 
 if [[ $* == *windows* ]]; then
   CC="x86_64-w64-mingw32-gcc"
-  INC="-I./src -I./external -Iwindows/SDL2-2.28.5/x86_64-w64-mingw32/include"
+  INC="-I./src -I./external -Iexternal/windows/SDL2-2.28.5/x86_64-w64-mingw32/include"
   OUT_TYPE="exe"
   STD=""
-  LFLAGS="-Lwindows/SDL2-2.28.5/x86_64-w64-mingw32/lib -lm -lmingw32 -lSDL2main -lSDL2 -mwindows"
-  cp windows/SDL2-2.28.5/x86_64-w64-mingw32/bin/SDL2.dll ${BIN}
+  LFLAGS="-Lexternal/windows/SDL2-2.28.5/x86_64-w64-mingw32/lib -lm -lmingw32 -lSDL2main -lSDL2 -mwindows"
+  cp external/windows/SDL2-2.28.5/x86_64-w64-mingw32/bin/SDL2.dll ${BIN}
 fi
 
 CFLAGS="-pipe -Ofast -mavx -maes -msse4.1 -march=x86-64 ${STD} -Wno-comment -Wno-visibility ${INC}"
