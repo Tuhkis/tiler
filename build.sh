@@ -8,14 +8,27 @@ CC=clang
 if ! command -v clang &> /dev/null; then
   CC=gcc
 fi
-INC="-I./src -I./external"
-CFLAGS="-pipe -Wall -Wpedantic -Werror -Ofast -mavx -maes -msse4.1 -march=x86-64 -std=c89 -ansi -Wno-comment -Wno-visibility ${INC}"
-LFLAGS="-lSDL2 -lm"
+INC="-I./src -I./external $(sdl2-config --cflags)"
+LFLAGS="-lm $(sdl2-config --libs)"
 SRC=src
 BIN=bin
-OUT=tiler.out
+OUT=tiler
+OUT_TYPE="out"
 FILES=($(find ${SRC}/*.c))
 FILES_LEN=${#FILES[@]}
+STD="-Wall -Wpedantic -Werror -std=c89 -ansi"
+
+if [[ $* == *windows* ]]; then
+  CC="x86_64-w64-mingw32-gcc"
+  INC="-I./src -I./external -Iwindows/SDL2-2.28.5/x86_64-w64-mingw32/include"
+  OUT_TYPE="exe"
+  STD=""
+  LFLAGS="-Lwindows/SDL2-2.28.5/x86_64-w64-mingw32/lib -lm -lmingw32 -lSDL2main -lSDL2 -mwindows"
+  cp windows/SDL2-2.28.5/x86_64-w64-mingw32/bin/SDL2.dll ${BIN}
+fi
+
+CFLAGS="-pipe -Ofast -mavx -maes -msse4.1 -march=x86-64 ${STD} -Wno-comment -Wno-visibility ${INC}"
+
 
 mkdir -p ${BIN}
 
@@ -40,9 +53,9 @@ can_compile=$?
 
 if test ${can_compile} -eq 0; then
   echo "linking..."
-  if $(${CC} ${BIN}/*.o ${LFLAGS} -o ${BIN}/${OUT}); then
+  if $(${CC} ${BIN}/*.o ${LFLAGS} -o ${BIN}/${OUT}.${OUT_TYPE}); then
     echo "stripping..."
-    strip ${BIN}/${OUT}
+    strip ${BIN}/${OUT}.${OUT_TYPE}
   fi
 fi
 

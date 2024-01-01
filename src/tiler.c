@@ -111,6 +111,7 @@ int main(int argc, char** argv) {
 	app.map = create_map(16, 13);
 	app.cam_x = -0.5f * app.map.width * TILE_SIZE;
 	app.cam_y = -0.5f * app.map.height * TILE_SIZE;
+	printf("fwaf\n");
 	app.ui_font = open_font(app.renderer, "font.ttf", 32 * scale());
 	app.running = 1;
   /* Main loop */
@@ -143,7 +144,8 @@ int main(int argc, char** argv) {
         }
         case SDL_MOUSEMOTION: {
           if (event.motion.state & SDL_BUTTON_LMASK) {
-            if (abs(event.motion.xrel) < 26 && abs(event.motion.yrel) < 26) {
+            /* Make sure no one just flings their way out of the map. */
+            if (abs(event.motion.xrel) < 45 && abs(event.motion.yrel) < 45) {
               app.cam_x -= event.motion.xrel;
               app.cam_y -= event.motion.yrel;
             }

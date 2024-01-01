@@ -2,6 +2,8 @@
 #define STYLE_H
 
 /* What's better than hacking the C preprocessor for evil? */
+#undef RGB
+#undef RGBA
 #define RGB(r, g, b) r, g, b, 255
 #define RGBA(r, g, b, a) r, g, b, a
 

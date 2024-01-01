@@ -1,7 +1,9 @@
 #ifndef TILER_H
 #define TILER_H
 
+#include "math.h"
 #include "SDL2/SDL.h"
+#include "stdio.h"
 
 #include "block_type.h"
 #include "font.h"

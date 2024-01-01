@@ -1,3 +1,5 @@
+#include "stdio.h"
+
 #include "map.h"
 
 struct Map create_map(int width, int height) {

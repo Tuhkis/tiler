@@ -2,4 +2,5 @@ bin
 bin/*
 bin/*.out
 bin/*.exe
+bin/SDL2.dll
 
