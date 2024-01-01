@@ -18,16 +18,16 @@ FILES=($(find ${SRC}/*.c))
 FILES_LEN=${#FILES[@]}
 
 mkdir -p ${BIN}
-can_compile=true
 
 build_file () {
   if ! ${CC} ${CFLAGS} -c $1 -o "${BIN}/${1//\//_}.o"; then
     echo -e "${RED}failed to compile $1.${NORM}"
-    rm ${BIN}/*.o
+    exit 1
   fi
   COMPILED=($(find ${BIN}/*.o))
   COMPILED_LEN=${#COMPILED[@]}
   echo -e "${GREEN}[$(((COMPILED_LEN * 100) / (FILES_LEN)))%]${NORM} Compiled $1"
+  exit 0
 }
 
 echo "Building..."
@@ -36,7 +36,9 @@ for i in "${!FILES[@]}"; do
 done
 
 wait $(jobs -p)
-if ${can_compile}; then
+can_compile=$?
+
+if test ${can_compile} -eq 0; then
   echo "linking..."
   if $(${CC} ${BIN}/*.o ${LFLAGS} -o ${BIN}/${OUT}); then
     echo "stripping..."
@@ -45,6 +47,6 @@ if ${can_compile}; then
 fi
 
 echo "cleaning..."
-rm ${BIN}/*.o
-echo -e "${GREEN}done. Have fun!${NORM}"
+rm -rf ${BIN}/*.o
+echo -e "${GREEN}done."
 

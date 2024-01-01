@@ -108,9 +108,9 @@ int main(int argc, char** argv) {
   SDL_SetRenderDrawColor(app.renderer, 255, 60, 60, 255);
 	SDL_RenderClear(app.renderer);
 	SDL_RenderPresent(app.renderer);
-	app.cam_x = 0.0f;
-	app.cam_y = 0.0f;
 	app.map = create_map(16, 13);
+	app.cam_x = -0.5f * app.map.width * TILE_SIZE;
+	app.cam_y = -0.5f * app.map.height * TILE_SIZE;
 	app.ui_font = open_font(app.renderer, "font.ttf", 32 * scale());
 	app.running = 1;
   /* Main loop */
