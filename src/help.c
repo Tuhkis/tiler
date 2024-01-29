@@ -19,7 +19,7 @@ void help_screen_toggle(struct Tiler* app) {
   screen.visible = !screen.visible;
 }
 
-char help_process_scroll(float mouse_x, float mouse_y, float scroll) {
+char help_process_scroll(int mouse_x, int mouse_y, float scroll) {
   /* Check if mouse is in screen. */
   if (screen.visible) {
     screen.scroll += scroll * 225.0f;

@@ -59,9 +59,14 @@ void draw_grid(struct Tiler* app) {
 }
 
 int main(int argc, char** argv) {
-  struct Tiler app = {0};
+  SDL_Cursor* basic_cursor;
+  SDL_Cursor* hand_cursor;
+  SDL_Cursor* move_cursor;
+  SDL_Cursor* scaleh_cursor;
+  SDL_Cursor* scalew_cursor;
   SDL_DisplayMode dm;
   SDL_Event event;
+  struct Tiler app = {0};
 #ifdef _WIN32
   {
     HINSTANCE lib = LoadLibrary("user32.dll");
@@ -78,6 +83,13 @@ int main(int argc, char** argv) {
     printf((char*)"Could not init SDL2.\nError: %s\n", (char*)SDL_GetError());
     return -1;
   }
+
+  /* Load cursors. */
+  basic_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+  hand_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
+  move_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
+  scaleh_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
+  scalew_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENS);
 
   SDL_GetCurrentDisplayMode(0, &dm);
   app.window_width = dm.w * 0.67f;
@@ -111,7 +123,6 @@ int main(int argc, char** argv) {
 	app.map = create_map(16, 13);
 	app.cam_x = -0.5f * app.map.width * TILE_SIZE;
 	app.cam_y = -0.5f * app.map.height * TILE_SIZE;
-	printf("fwaf\n");
 	app.ui_font = open_font(app.renderer, "font.ttf", 32 * scale());
 	app.running = 1;
   /* Main loop */
@@ -134,16 +145,27 @@ int main(int argc, char** argv) {
         }
         /* Mouse wheel events */
         case SDL_MOUSEWHEEL: {
-          int mouse_x, mouse_y;
           const float s = event.wheel.y * 0.075f * scale();
-          SDL_GetMouseState(&mouse_x, &mouse_y);
 
-          if (help_process_scroll(mouse_x, mouse_y, s) == 0) {
+          if (
+            (!help_process_scroll(app.mouse_x, app.mouse_y, s)) &&
+            (!bottom_bar_scroll(app.mouse_x, app.mouse_y, s))
+          ){
             change_zoom(s);
           }
         }
         case SDL_MOUSEMOTION: {
+          SDL_GetMouseState(&app.mouse_x, &app.mouse_y);
           if (event.motion.state & SDL_BUTTON_LMASK) {
+            if (0) {
+              SDL_SetCursor(hand_cursor);
+              SDL_SetCursor(scalew_cursor);
+              SDL_SetCursor(scaleh_cursor);
+              SDL_SetCursor(move_cursor);
+            }
+            else {
+              SDL_SetCursor(basic_cursor);
+            }
             /* Make sure no one just flings their way out of the map. */
             if (abs(event.motion.xrel) < 45 && abs(event.motion.yrel) < 45) {
               app.cam_x -= event.motion.xrel;
@@ -169,8 +191,21 @@ int main(int argc, char** argv) {
         default: {
           char name_buf[1052] = {0};
           SDL_Rect temp;
-          temp.x = floor(zoom() * (12.5f) - app.cam_x) - 1;
-          temp.y = floor(zoom() * (12.5f) - app.cam_y) - 1;
+
+          { /* Keep camera in bounds. */
+            float x_limit = app.map.width * TILE_SIZE;
+            float y_limit = app.map.height * TILE_SIZE;
+            if (app.cam_x < -x_limit)
+              app.cam_x = -x_limit;
+            else if (app.cam_x > x_limit + app.map.width * TILE_SIZE * -0.75f)
+              app.cam_x = x_limit + app.map.width * TILE_SIZE * -0.75f;
+            if (app.cam_y + app.window_width < -y_limit)
+              app.cam_y = -y_limit - app.window_width;
+            (void)y_limit;
+          }
+
+          temp.x = floor(zoom() * 12.5f - app.cam_x);
+          temp.y = floor(zoom() * 12.5f - app.cam_y);
           temp.w = floor(0.5f * TILE_SIZE);
           temp.h = floor(0.5f * TILE_SIZE);
 

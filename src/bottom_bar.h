@@ -10,11 +10,13 @@
 #define BB_HEIGHT (0.1f)
 
 struct BottomBar {
+  float scroll;
   int height;
   SDL_Rect r;
   struct Tiler* app;
 };
 
+int bottom_bar_scroll(int mouse_x, int mouse_y, float scroll);
 void bottom_bar_init(struct Tiler* t);
 void bottom_bar_update(void);
 void bottom_bar_draw(void);

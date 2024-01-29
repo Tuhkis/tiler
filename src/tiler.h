@@ -20,6 +20,7 @@
 struct Tiler {
   float cam_x, cam_y;
   Font* ui_font;
+  int mouse_x, mouse_y;
   int window_height;
   int window_width;
   SDL_Renderer* renderer;
