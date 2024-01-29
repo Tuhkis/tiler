@@ -12,7 +12,7 @@ struct HelpScreen {
   unsigned char visible;
 };
 
-char help_process_scroll(float mouse_x, float mouse_y, float scroll);
+char help_process_scroll(int mouse_x, int mouse_y, float scroll);
 void help_screen_init(struct Tiler* app);
 void help_screen_toggle(struct Tiler* app);
 void help_screen_draw(void);

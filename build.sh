@@ -14,8 +14,10 @@ INC="-I./src -I./external $(sdl2-config --cflags)"
 LFLAGS="-lm $(sdl2-config --libs)"
 SRC=src
 BIN=bin
+mkdir -p ${BIN}
 OUT=tiler
 OUT_TYPE="out"
+# Non-posix-compliance, I choose you!!!!!
 FILES=($(find ${SRC}/*.c))
 FILES_LEN=${#FILES[@]}
 
@@ -31,28 +33,27 @@ fi
 if [[ $* == *clean* ]]; then
   echo "Cleaning time!!"
   rm -rf ${BIN}
-  echo -e "${GREEN}done."
+  printf "${GREEN}done.\n"
   exit 0
 fi
-
 CFLAGS="-pipe -Ofast -mavx -maes -msse4.1 -march=x86-64 ${STD} -Wno-comment -Wno-visibility ${INC}"
-
-mkdir -p ${BIN}
 
 build_file () {
   if ! ${CC} ${CFLAGS} -c $1 -o "${BIN}/${1//\//_}.o"; then
-    echo -e "${RED}failed to compile $1.${NORM}"
+    printf "${RED}failed to compile $1.${NORM}\n"
     exit 1
   fi
   COMPILED=($(find ${BIN}/*.o))
   COMPILED_LEN=${#COMPILED[@]}
-  echo -e "${GREEN}[$(((COMPILED_LEN * 100) / (FILES_LEN)))%]${NORM} Compiled $1"
+  printf "${GREEN}[$(((COMPILED_LEN * 100) / (FILES_LEN)))%c]${NORM} Compiled $1\n" "%"
   exit 0
 }
 
 echo "Building..."
-for i in "${!FILES[@]}"; do
+i=0
+while [ "$i" -lt ${FILES_LEN} ]; do
   build_file "${FILES[i]}" &
+  i=$((i+1))
 done
 
 wait $(jobs -p)
@@ -68,5 +69,5 @@ fi
 
 echo "cleaning..."
 rm -rf ${BIN}/*.o
-echo -e "${GREEN}done."
+printf "${GREEN}done.\n"
 
