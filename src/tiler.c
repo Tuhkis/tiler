@@ -3,6 +3,7 @@
 #include "stdio.h"
 
 #include "bottom_bar.h"
+#include "block.h"
 #include "font.h"
 #include "help.h"
 #include "keymap.h"
@@ -73,7 +74,7 @@ int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
 
-  /* SDL_Init returns 0 if succesfull. 0 = false, 1 = true. */
+  /* SDL_Init returns 0 if succesful. Normally: 0 = false, 1 = true. */
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
     printf((char*)"Could not init SDL2.\nError: %s\n", (char*)SDL_GetError());
     return -1;
@@ -134,15 +135,14 @@ int main(int argc, char** argv) {
         }
         /* Mouse wheel events */
         case SDL_MOUSEWHEEL: {
-          int mouse_x, mouse_y;
           const float s = event.wheel.y * 0.075f * scale();
-          SDL_GetMouseState(&mouse_x, &mouse_y);
 
-          if (help_process_scroll(mouse_x, mouse_y, s) == 0) {
+          if (help_process_scroll(app.mouse_x, app.mouse_y, s) == 0) {
             change_zoom(s);
           }
         }
         case SDL_MOUSEMOTION: {
+          SDL_GetMouseState(&app.mouse_x, &app.mouse_y);
           if (event.motion.state & SDL_BUTTON_LMASK) {
             /* Make sure no one just flings their way out of the map. */
             if (abs(event.motion.xrel) < 45 && abs(event.motion.yrel) < 45) {
@@ -168,6 +168,7 @@ int main(int argc, char** argv) {
          * All change in the view should be caused by the user. */
         default: {
           char name_buf[1052] = {0};
+          int i;
           SDL_Rect temp;
           temp.x = floor(zoom() * (12.5f) - app.cam_x) - 1;
           temp.y = floor(zoom() * (12.5f) - app.cam_y) - 1;
@@ -177,8 +178,12 @@ int main(int argc, char** argv) {
           SDL_SetRenderDrawColor(app.renderer, BG_COLOR);
           SDL_RenderClear(app.renderer);
           draw_grid(&app);
+          for (i = 0; i < MAX_BLOCKS; ++i) {
+            draw_block(app, app.map.blocks[i]);
+          }
+          draw_block_highlight(app);
           bottom_bar_update();
-          SDL_RenderFillRect(app.renderer, &temp);
+          /* SDL_RenderFillRect(app.renderer, &temp); */
           SDL_SetRenderDrawColor(app.renderer, RGB(242, 242, 242));
           sprintf(&name_buf[0], "%s; (%d, %d)", app.map.name, app.map.width, app.map.height);
           render_text(app.renderer, app.ui_font,

@@ -12,6 +12,7 @@ static struct Keybind keys[] = {
   {"Close program.", SDLK_ESCAPE, quit_app},
   {"Zoom in.", SDLK_PLUS, zoom_in},
   {"Zoom out.", SDLK_MINUS, zoom_out},
+  {"Add new block at mouse cursor.", SDLK_LCTRL, add_block},
   {"Delete chosen block.", SDLK_DELETE, delete_current_block},
   {NULL, 0, NULL}
 };
