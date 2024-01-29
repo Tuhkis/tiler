@@ -148,14 +148,10 @@ int main(int argc, char** argv) {
         case SDL_MOUSEWHEEL: {
           const float s = event.wheel.y * 0.075f * scale();
 
-<<<<<<< HEAD
-          if (help_process_scroll(app.mouse_x, app.mouse_y, s) == 0) {
-=======
           if (
             (!help_process_scroll(app.mouse_x, app.mouse_y, s)) &&
             (!bottom_bar_scroll(app.mouse_x, app.mouse_y, s))
           ){
->>>>>>> 7791b2b3d401bfd98e15c25898f6935ae87abb1e
             change_zoom(s);
           }
         }
